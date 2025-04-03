@@ -25,8 +25,8 @@
     </div>
 
    <script>
-document.getElementById("contactForm").addEventListener("submit", function(event) {
-    event.preventDefault();
+function sendMessage(event) {
+    event.preventDefault(); // Prevent form from reloading the page
 
     let formData = {
         name: document.querySelector("input[name='name']").value,
@@ -40,10 +40,13 @@ document.getElementById("contactForm").addEventListener("submit", function(event
         body: JSON.stringify(formData)
     })
     .then(response => response.json())
-    .then(data => alert(data.message || data.error))
+    .then(data => {
+        alert(data.message || data.error);
+    })
     .catch(error => console.error("Error:", error));
-});
+}
 </script>
+
 
 </body>
 </html>
