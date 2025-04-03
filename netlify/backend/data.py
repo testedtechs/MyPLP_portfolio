@@ -21,10 +21,10 @@ def handler(event, context):
     try:
         # Connect to MySQL Database
         conn = pymysql.connect(
-            host="sql.freedatabase.com",  # Update this
-            user="your_username",
-            password="your_password",
-            database="portfolio_db",
+            host="sql5.freesqldatabase.com",  # Update this
+            user="sql5771151",
+            password="gChwbALzlf",
+            database="sql5771151,
             cursorclass=pymysql.cursors.DictCursor
         )
 
