@@ -24,23 +24,26 @@
         <p id="response"></p>
     </div>
 
-    <script>
-        function sendMessage() {
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const message = document.getElementById("message").value;
-            
-            fetch("contact.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, message })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("response").innerText = data.message;
-            })
-            .catch(error => console.error("Error:", error));
-        }
-    </script>
+   <script>
+document.getElementById("contactForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let formData = {
+        name: document.querySelector("input[name='name']").value,
+        email: document.querySelector("input[name='email']").value,
+        message: document.querySelector("textarea[name='message']").value
+    };
+
+    fetch("/.netlify/functions/data", {  // Matches netlify/backend/data.py
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => alert(data.message || data.error))
+    .catch(error => console.error("Error:", error));
+});
+</script>
+
 </body>
 </html>
