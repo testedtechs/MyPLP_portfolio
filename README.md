@@ -46,7 +46,7 @@ Modify the `localhost`, `root`, and password fields as needed.
 ### 3. Run the Project
 
 - Place `index.html` and `contact.php` in the same directory.
-- Start a local server (e.g., XAMPP or WAMP).
+- Start a local server (e.g.MySQL, WAMP or XAMPP).
 - Open `index.html` in a browser.
 - Test the contact form by submitting a message.
 
@@ -63,8 +63,6 @@ This separation allows for better scalability and easier debugging while keeping
 - Improve UI design using CSS frameworks like Tailwind or Bootstrap.
 
 ## Author
-
-[Your Name]
 
 Ogunbekun Imoleayo
 
