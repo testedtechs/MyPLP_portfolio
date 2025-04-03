@@ -1,40 +1,41 @@
-const mysql = require("mysql2/promise");
+import json
+import pymysql
 
-exports.handler = async function (event) {
-    if (event.httpMethod !== "POST") {
-        return { statusCode: 405, body: "Method Not Allowed" };
-    }
+def handler(event, context):
+    if event["httpMethod"] != "POST":
+        return {"statusCode": 405, "body": json.dumps({"error": "Method Not Allowed"})}
 
-    const { name, email, message } = JSON.parse(event.body);
+    # Parse JSON request body
+    try:
+        body = json.loads(event["body"])
+    except json.JSONDecodeError:
+        return {"statusCode": 400, "body": json.dumps({"error": "Invalid JSON format"})}
 
-    if (!name || !email || !message) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "All fields are required." }),
-        };
-    }
+    name = body.get("name")
+    email = body.get("email")
+    message = body.get("message")
 
-    try {
-        const connection = await mysql.createConnection({
-            host: "sql.freedatabase.com", // Change this
-            user: "your_username",
-            password: "your_password",
-            database: "portfolio_db",
-        });
+    if not name or not email or not message:
+        return {"statusCode": 400, "body": json.dumps({"error": "All fields are required"})}
 
-        const query = "INSERT INTO messages (name, email, message) VALUES (?, ?, ?)";
-        await connection.execute(query, [name, email, message]);
+    try:
+        # Connect to MySQL Database
+        conn = pymysql.connect(
+            host="sql.freedatabase.com",  # Update this
+            user="your_username",
+            password="your_password",
+            database="portfolio_db",
+            cursorclass=pymysql.cursors.DictCursor
+        )
 
-        await connection.end();
+        with conn.cursor() as cursor:
+            sql = "INSERT INTO messages (name, email, message) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (name, email, message))
+            conn.commit()
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ message: "Message sent successfully!" }),
-        };
-    } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: "Database error: " + error.message }),
-        };
-    }
-};
+        conn.close()
+
+        return {"statusCode": 200, "body": json.dumps({"message": "Message sent successfully!"})}
+
+    except Exception as e:
+        return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
