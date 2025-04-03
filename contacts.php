@@ -5,7 +5,7 @@ header("Content-Type: application/json");
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$conn = new mysqli("localhost", "root", "", "portfolio_db");
+$conn = new mysqli("sql5.freesqldatabase.com", "sql5771151", "gChwbALzlf", "sql5771151");
 
 // Check if JSON data is received
 $data = json_decode(file_get_contents("php://input"), true);
