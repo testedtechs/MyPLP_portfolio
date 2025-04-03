@@ -1,6 +1,7 @@
 # Portfolio Website with Contact Form  
 Live Project is running on
 https://myplp.netlify.app/
+Database is running on https://www.freesqldatabase.com
 
 ## Project Overview
 
