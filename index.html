@@ -24,9 +24,24 @@
         <p id="response"></p>
     </div>
 
-   <script>
+<form id="contactForm">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="email" name="email" placeholder="Your Email" required>
+    <textarea name="message" placeholder="Your Message" required></textarea>
+    <button type="submit">Send</button>
+</form>
+
+<script>
+// Attach event listener instead of inline `onclick`
+document.getElementById("contactForm").addEventListener("submit", sendMessage);
+</script>
+
+
+  <script>
 function sendMessage(event) {
-    event.preventDefault(); // Prevent form from reloading the page
+    if (event) {
+        event.preventDefault(); // Prevents the page from refreshing
+    }
 
     let formData = {
         name: document.querySelector("input[name='name']").value,
@@ -46,6 +61,7 @@ function sendMessage(event) {
     .catch(error => console.error("Error:", error));
 }
 </script>
+
 
 
 </body>
