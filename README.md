@@ -9,6 +9,8 @@ This is a simple portfolio website with a contact form that allows visitors to s
 
 - `index.html` - The main page that includes the contact form.
 - `contact.php` - The backend script that processes form submissions and stores them in the database.
+The project started with using php as the backend to handle message submission into the datatbase, but when deploying, i realised netlify doesn't work with php files.
+had to go back to the AI to help refactor the code using javascript only
 
 ## Features
 
