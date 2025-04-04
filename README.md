@@ -23,7 +23,9 @@ had to go back to the AI to help refactor the code using javascript only
 
 ### 1. Create the Database
 
-Run the following SQL commands to set up the database:
+Log in to your FreeSQLDatabase.com account and create a new database.
+
+Then run this SQL in phpMyAdmin to create the required table:
 
 ```sql
 CREATE DATABASE portfolio_db;
@@ -38,28 +40,102 @@ CREATE TABLE messages (
 );
 ```
 
-### 2. Configure the Backend
+### 2. Configure the Netlify Serverless Function
 
-Ensure that `contact.php` is correctly configured with your database credentials:
+Create a file at:
+📁 netlify/functions/contact.js
 
-```php
-$conn = new mysqli("localhost", "root", "", "portfolio_db");
-```
+const mysql = require("mysql2/promise");
 
-Modify the `localhost`, `root`, and password fields as needed.
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: "Method Not Allowed" }),
+    };
+  }
 
-### 3. Run the Project
+  const { name, email, message } = JSON.parse(event.body);
 
-- Place `index.html` and `contact.php` in the same directory.
-- Start a local server (e.g.MySQL, WAMP or XAMPP).
-- Open `index.html` in a browser.
-- Test the contact form by submitting a message.
+  const dbConfig = {
+    host: "sql.freesqldatabase.com",
+    user: "your_db_user",
+    password: "your_db_password",
+    database: "your_db_name",
+  };
+
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const query = "INSERT INTO contact (name, email, message) VALUES (?, ?, ?)";
+    await connection.execute(query, [name, email, message]);
+    await connection.end();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: "Message received successfully!" }),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Database error: " + error.message }),
+    };
+  }
+};
+
+✅ Install the required package locally using:
+
+npm init -y
+npm install mysql2
+
+Ensure package.json and package-lock.json are committed before deploying to Netlify.
+
+### 3. Connect the Contact Form to the Function
+
+Update your contact.html form to send data to the Netlify function:
+
+<form id="contactForm" class="container-fluid py-5">
+  <input type="text" name="name" id="name" placeholder="Your name" required />
+  <input type="email" name="email" id="email" placeholder="Your email" required />
+  <textarea name="message" id="message" placeholder="Your message" required></textarea>
+  <button type="submit">Send Message</button>
+</form>
+<p id="responseMessage"></p>
+
+<script>
+document.getElementById("contactForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const message = document.getElementById("message").value;
+
+  const response = await fetch("/.netlify/functions/contact", {
+    method: "POST",
+    body: JSON.stringify({ name, email, message }),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const result = await response.json();
+  document.getElementById("responseMessage").innerText = result.message || result.error;
+});
+</script>
+
+### 4. Deploy the Site
+
+    Push your project to GitHub.
+
+    Connect your repo to Netlify.
+
+    In your project root, include a netlify.toml:
+
+[build]
+  functions = "netlify/functions"
 
 ## Development Decisions
 
-Initially, I attempted to merge `index.html` and `contact.php` into a single file, embedding the PHP logic within the HTML. However, I later decided to keep them separate to maintain better code structure and separation of concerns.
+Initially, this project was built using a PHP backend for the contact form. However, I replaced it with a serverless function using Node.js on Netlify to make it cloud-native, more scalable, and compatible with Netlify hosting.
 
-This separation allows for better scalability and easier debugging while keeping the HTML clean and reusable.
+Keeping HTML and logic separated improves structure, security, and maintainability.
 
 ## Future Improvements
 
